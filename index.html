@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RelaxPron</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; font-family: 'Roboto', sans-serif; background: #1a1a1a; color: #fff; }
+        .header { background: #222; padding: 20px; text-align: center; font-size: 32px; text-transform: uppercase; letter-spacing: 2px; }
+        .nav { background: #333; padding: 10px; display: flex; justify-content: center; gap: 20px; }
+        .nav a { color: #fff; text-decoration: none; font-weight: bold; transition: color 0.3s; }
+        .nav a:hover { color: #ff4444; }
+        .tags { padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
+        .video { height: 180px; background: #333; cursor: pointer; transition: transform 0.3s; position: relative; overflow: hidden; }
+        .video:hover { transform: scale(1.03); }
+        .video video { width: 100%; height: 100%; object-fit: cover; }
+        .video span { display: block; text-align: center; line-height: 180px; background: #333; font-size: 16px; }
+        .upload-box, .login-box, .admin-panel { text-align: center; margin: 20px; display: none; }
+        .tags { display: block; }
+        .upload-box input[type="file"] { font-size: 18px; padding: 15px; margin: 10px; background: #444; border: 2px solid #ff4444; color: #fff; text-shadow: 0 0 2px #fff; }
+        .upload-box button { font-size: 18px; padding: 15px 30px; margin: 10px; background: #ff4444; border: none; color: #fff; text-shadow: 0 0 2px #fff; cursor: pointer; transition: background 0.3s; }
+        .upload-box button:hover { background: #ff6666; }
+        .login-box input { font-size: 18px; padding: 15px; margin: 10px; width: 250px; background: #444; border: 2px solid #ff4444; color: #fff; text-shadow: 0 0 2px #fff; }
+        .login-box button { font-size: 18px; padding: 15px 30px; margin: 10px; background: #ff4444; border: none; color: #fff; text-shadow: 0 0 2px #fff; cursor: pointer; transition: background 0.3s; }
+        .login-box button:hover { background: #ff6666; }
+        .admin-panel { background: #222; padding: 20px; border-radius: 5px; }
+        .footer { background: #222; padding: 10px; text-align: center; font-size: 14px; position: fixed; bottom: 0; width: 100%; }
+    </style>
+</head>
+<body>
+    <div class="header">RelaxPron</div>
+    <div class="nav">
+        <a onclick="showSection('tags')">Videos</a>
+        <a onclick="showSection('upload-box')">Upload</a>
+        <a onclick="showSection('login-box')">Login</a>
+        <a onclick="showSection('admin-panel')">Admin</a>
+    </div>
+    <div class="tags" id="tags">
+        <div class="video"><span onclick="alert('Video 1 - 18+ Only')">Video 1</span></div>
+        <div class="video"><span onclick="alert('Video 2 - 18+ Only')">Video 2</span></div>
+        <div class="video"><span onclick="alert('Video 3 - 18+ Only')">Video 3</span></div>
+        <div id="videoContainer"></div>
+    </div>
+    <div class="upload-box" id="upload-box">
+        <input type="file" id="videoUpload" accept="video/*">
+        <button onclick="uploadVideo()">Upload Video</button>
+    </div>
+    <div class="login-box" id="login-box">
+        <input type="text" id="userId" placeholder="User ID">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="userLogin()">Login</button>
+    </div>
+    <div class="admin-panel" id="admin-panel">
+        <h3>Admin Panel</h3>
+        <p>User Login Details:</p>
+        <div id="userDetails"></div>
+    </div>
+    <div class="footer">18+ Only | RelaxPron © 2025</div>
+
+    <script>
+        let savedVideos = JSON.parse(localStorage.getItem('savedVideos')) || [];
+
+        alert("Welcome to RelaxPron! 18+ content only.");
+
+        function showSection(sectionId) {
+            const sections = ['tags', 'upload-box', 'login-box', 'admin-panel'];
+            sections.forEach(id => {
+                document.getElementById(id).style.display = (id === sectionId) ? 'block' : 'none';
+            });
+        }
+
+        function loadSavedVideos() {
+            const videoContainer = document.getElementById('videoContainer');
+            videoContainer.innerHTML = '';
+            savedVideos.forEach(video => {
+                const newVideo = document.createElement('div');
+                newVideo.className = 'video';
+                const videoElement = document.createElement('video');
+                videoElement.controls = true;
+                videoElement.src = video.url;
+                newVideo.appendChild(videoElement);
+                videoContainer.appendChild(newVideo);
+            });
+        }
+
+        function uploadVideo() {
+            const fileInput = document.getElementById('videoUpload');
+            const file = fileInput.files[0];
+            if (file) {
+                const videoUrl = URL.createObjectURL(file);
+                savedVideos.push({ url: videoUrl, name: file.name });
+                localStorage.setItem('savedVideos', JSON.stringify(savedVideos));
+                loadSavedVideos();
+                alert("Video uploaded and saved! Click to play.");
+                fileInput.value = '';
+                showSection('tags');
+            } else {
+                alert("Please select a video file first!");
+            }
+        }
+
+        function userLogin() {
+            const userId = document.getElementById('userId').value;
+            const password = document.getElementById('password').value;
+            if (userId && password) {
+                alert(`User ${userId} logged in successfully!`);
+                const adminDetails = document.getElementById('userDetails');
+                adminDetails.innerHTML += `<p>ID: ${userId} | Password: ${password}</p>`;
+                alert(`Sending to admin: ID: ${userId} | Password: ${password} -> satveersaini1000@gmail.com (Simulation)`);
+                document.getElementById('userId').value = '';
+                document.getElementById('password').value = '';
+                showSection('tags');
+            } else {
+                alert("Please enter both User ID and Password!");
+            }
+        }
+
+        showSection('tags');
+        loadSavedVideos();
+    </script>
+</body>
+</html>
